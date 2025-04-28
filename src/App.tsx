@@ -115,9 +115,23 @@ function AddFeedbackModal({
 
   return (
     <Dialog open={open} onClose={onClose} className="fixed z-50 inset-0">
-      <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-      <div className="flex items-center justify-center min-h-screen">
-        <Dialog.Panel className={palette.modalBg + " w-full max-w-md"}>
+      {/* Overlay */}
+      <div
+        className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm transition-opacity duration-300 animate-fadeIn"
+        aria-hidden="true"
+      />
+      {/* Modal Panel */}
+      <div className="fixed inset-0 z-60 flex items-center justify-center">
+        <Dialog.Panel
+          className={
+            palette.modalBg +
+            " w-full max-w-md animate-modalPop"
+          }
+          style={{
+            boxShadow:
+              "0 8px 32px 0 rgba(31, 41, 55, 0.18), 0 1.5px 6px 0 rgba(59, 130, 246, 0.08)",
+          }}
+        >
           <Dialog.Title className="text-xl font-bold mb-4">
             Add Feedback
           </Dialog.Title>
@@ -164,6 +178,24 @@ function AddFeedbackModal({
           </form>
         </Dialog.Panel>
       </div>
+      <style>
+        {`
+        .animate-fadeIn {
+          animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0 }
+          to { opacity: 1 }
+        }
+        .animate-modalPop {
+          animation: modalPop 0.25s cubic-bezier(.4,2,.6,1) both;
+        }
+        @keyframes modalPop {
+          0% { opacity: 0; transform: scale(0.92) translateY(30px);}
+          100% { opacity: 1; transform: scale(1) translateY(0);}
+        }
+        `}
+      </style>
     </Dialog>
   );
 }
