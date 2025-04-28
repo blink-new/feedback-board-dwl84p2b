@@ -214,7 +214,22 @@ function setLocalVotes(votes: Record<string, boolean>) {
 
 function getLocalFeedback(): Feedback[] {
   try {
-    return JSON.parse(localStorage.getItem("feedback") || "[]");
+    // Defensive: Only accept arrays of objects with required keys
+    const data = JSON.parse(localStorage.getItem("feedback") || "[]");
+    if (
+      Array.isArray(data) &&
+      data.every(
+        (f) =>
+          typeof f === "object" &&
+          typeof f.id === "string" &&
+          typeof f.title === "string" &&
+          typeof f.description === "string" &&
+          typeof f.votes === "number"
+      )
+    ) {
+      return data;
+    }
+    return [];
   } catch {
     return [];
   }
@@ -293,21 +308,22 @@ export default function App() {
         </button>
       </header>
       <main className="max-w-2xl mx-auto px-4 pb-20">
-        {feedback.length === 0 ? (
+        {Array.isArray(feedback) && feedback.length === 0 ? (
           <EmptyState />
         ) : (
           <div className="space-y-5">
-            {feedback
-              .slice()
-              .sort((a, b) => b.votes - a.votes)
-              .map((f) => (
-                <FeedbackCard
-                  key={f.id}
-                  feedback={f}
-                  upvoted={!!votes[f.id]}
-                  onUpvote={() => handleUpvote(f.id)}
-                />
-              ))}
+            {Array.isArray(feedback) &&
+              feedback
+                .slice()
+                .sort((a, b) => b.votes - a.votes)
+                .map((f) => (
+                  <FeedbackCard
+                    key={f.id}
+                    feedback={f}
+                    upvoted={!!votes[f.id]}
+                    onUpvote={() => handleUpvote(f.id)}
+                  />
+                ))}
           </div>
         )}
       </main>
